@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/verb1/Desktop/AP2-FFBSQ/zxing-1.7-javase.jar"/>
+	<classpathentry kind="lib" path="C:/Users/verb1/Desktop/AP2-FFBSQ/zxing-core-2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/verb1/Desktop/AP2-FFBSQ/mysql-connector-java-5.1.42-bin/mysql-connector-java-5.1.42-bin.jar"/>
+	<classpathentry kind="lib" path="C:/Users/verb1/Desktop/AP2-FFBSQ/opencv-3.4.1-1.4.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/verb1/Desktop/AP2-FFBSQ/javacpp-1.4.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/OpenCV-3.4.1"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
