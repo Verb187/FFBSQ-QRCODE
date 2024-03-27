@@ -1,5 +1,6 @@
 package com.ffbsq.local;
 
+
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics;
@@ -7,10 +8,10 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JButton;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
-import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
@@ -24,17 +25,14 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public class ScannerQRCODE extends JFrame {
-	
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
 
     private JPanel contentPane;
+    private JPanel panelCamera;
     private CameraPanel cameraPanel;
 
-    /**
-     * Launch the application.
-     */
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -48,9 +46,6 @@ public class ScannerQRCODE extends JFrame {
         });
     }
 
-    /**
-     * Create the frame.
-     */
     public ScannerQRCODE() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 640, 480);
@@ -59,36 +54,46 @@ public class ScannerQRCODE extends JFrame {
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
+        JButton btnScanQR = new JButton("Scanner un QRCODE");
+        btnScanQR.setBounds(10, 10, 136, 38);
+        contentPane.add(btnScanQR);
+        btnScanQR.addActionListener(e -> {
+            cameraPanel.startCamera();
+        });
+
+        panelCamera = new JPanel();
+        panelCamera.setBounds(10, 64, 300, 300);
+        contentPane.add(panelCamera);
+        panelCamera.setLayout(null);
+
         cameraPanel = new CameraPanel();
-        cameraPanel.setBounds(0, 0, 640, 480);
-        contentPane.add(cameraPanel);
+        cameraPanel.setBounds(0, 0, 300, 300);
+        panelCamera.add(cameraPanel);
     }
 
-    /**
-     * Panel to display camera feed.
-     */
     class CameraPanel extends JPanel {
         private VideoCapture camera;
         private BufferedImage image;
 
         public CameraPanel() {
-            camera = new VideoCapture(0); // Access the camera. Number 0 indicates the first available camera.
+            setPreferredSize(new Dimension(300, 300));
+        }
+
+        public void startCamera() {
+            camera = new VideoCapture(0); 
 
             if (!camera.isOpened()) {
                 System.out.println("Cannot access camera!");
                 return;
             }
 
-            setPreferredSize(new Dimension(640, 480));
-
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     while (true) {
                         Mat frame = new Mat();
-                        camera.read(frame); // Capture an image from the camera
+                        camera.read(frame); 
 
-                        // Convert OpenCV Mat to BufferedImage
                         MatOfByte matOfByte = new MatOfByte();
                         Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2RGB);
                         Imgcodecs.imencode(".jpg", frame, matOfByte);
@@ -99,14 +104,13 @@ public class ScannerQRCODE extends JFrame {
                             e.printStackTrace();
                         }
 
-                        // Read QR code
                         String qrCodeText = readQRCode(image);
                         if (qrCodeText != null) {
                             System.out.println("QR code content: " + qrCodeText);
-                            break; // Exit the loop once QR code is found
+                            break; 
                         }
 
-                        repaint(); // Repaint the panel to display the new frame
+                        repaint(); 
                     }
                 }
             });
@@ -133,7 +137,7 @@ public class ScannerQRCODE extends JFrame {
 
                 return result.getText();
             } catch (NotFoundException e) {
-                return null; // No QR code found in the image
+                return null; 
             }
         }
     }
