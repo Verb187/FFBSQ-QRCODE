@@ -1,20 +1,40 @@
-package com.ffbsq.local;
+package V;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
-import com.google.zxing.*;
+
+import javax.imageio.ImageIO;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.DecodeHintType;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.NotFoundException;
+import com.google.zxing.Result;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.common.HybridBinarizer;
-import javax.imageio.ImageIO;
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -22,7 +42,9 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
-public class ScannerQRCODE extends JFrame {
+import C.LicencieController;
+
+public class ScanQRCODEApp extends JFrame {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
@@ -32,11 +54,13 @@ public class ScannerQRCODE extends JFrame {
     private CameraPanel cameraPanel;
     private JTextField textNumSerie;
     private JButton btnScanQR;
+    private JTextField textPrenom;
+    private JTextField textNom;
 
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
-                ScannerQRCODE frame = new ScannerQRCODE();
+                ScanQRCODEApp frame = new ScanQRCODEApp();
                 frame.setVisible(true);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -44,16 +68,17 @@ public class ScannerQRCODE extends JFrame {
         });
     }
 
-    public ScannerQRCODE() {
+    public ScanQRCODEApp() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 831, 424);
+        setBounds(100, 100, 872, 432);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(null);
         setContentPane(contentPane);
 
         btnScanQR = new JButton("Scanner un QRCODE");
-        btnScanQR.setBounds(10, 10, 136, 38);
+        btnScanQR.setFont(new Font("Sitka Small", Font.BOLD, 15));
+        btnScanQR.setBounds(10, 10, 300, 38);
         contentPane.add(btnScanQR);
 
         panelCamera = new JPanel();
@@ -65,25 +90,60 @@ public class ScannerQRCODE extends JFrame {
         cameraPanel.setBounds(0, 0, 300, 300);
         panelCamera.add(cameraPanel);
 
-        JLabel lblNumSerie = new JLabel("Numéro de licencié:");
-        lblNumSerie.setFont(new Font("Tahoma", Font.PLAIN, 15));
-        lblNumSerie.setBounds(373, 23, 149, 13);
+        JLabel lblNumSerie = new JLabel("Numéro de licencié");
+        lblNumSerie.setHorizontalAlignment(SwingConstants.CENTER);
+        lblNumSerie.setFont(new Font("Tahoma", Font.PLAIN, 18));
+        lblNumSerie.setBounds(373, 10, 462, 26);
         contentPane.add(lblNumSerie);
 
         textNumSerie = new JTextField();
-        textNumSerie.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        textNumSerie.setBounds(373, 46, 127, 29);
+        textNumSerie.setHorizontalAlignment(SwingConstants.CENTER);
+        textNumSerie.setEditable(false);
+        textNumSerie.setFont(new Font("Tahoma", Font.PLAIN, 20));
+        textNumSerie.setBounds(373, 46, 462, 29);
         contentPane.add(textNumSerie);
         textNumSerie.setColumns(10);
 
-        JButton btnModify = new JButton("Modifier le licencié");
-        btnModify.setFont(new Font("Tahoma", Font.PLAIN, 13));
-        btnModify.setBounds(492, 339, 172, 21);
+
+        JButton btnModify = new JButton("VOIR LE LICENCIE");
+        btnModify.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	String numeroLicence = textNumSerie.getText();
+            	ouvrirLicencie(numeroLicence); // 
+            	}
+        });
+        btnModify.setFont(new Font("MS UI Gothic", Font.BOLD, 18));
+        btnModify.setBounds(373, 165, 462, 45);
         contentPane.add(btnModify);
 
+        JLabel lblPrnom = new JLabel("Prénom");
+        lblPrnom.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        lblPrnom.setBounds(373, 83, 149, 13);
+        contentPane.add(lblPrnom);
+
+        textPrenom = new JTextField();
+        textPrenom.setEditable(false);
+        textPrenom.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        textPrenom.setColumns(10);
+        textPrenom.setBounds(373, 106, 185, 29);
+        contentPane.add(textPrenom);
+
+        textNom = new JTextField();
+        textNom.setEditable(false);
+        textNom.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        textNom.setColumns(10);
+        textNom.setBounds(650, 106, 185, 29);
+        contentPane.add(textNom);
+
+        JLabel lblNom = new JLabel("Nom");
+        lblNom.setHorizontalAlignment(SwingConstants.RIGHT);
+        lblNom.setFont(new Font("Tahoma", Font.PLAIN, 15));
+        lblNom.setBounds(708, 83, 127, 13);
+        contentPane.add(lblNom);
+
         btnScanQR.addActionListener(e -> {
+            btnScanQR.setEnabled(false);
             cameraPanel.startCamera();
-            btnScanQR.setEnabled(false); // Désactiver le bouton de numérisation QR une fois qu'il est cliqué
         });
     }
 
@@ -93,6 +153,10 @@ public class ScannerQRCODE extends JFrame {
 
         public CameraPanel() {
             setPreferredSize(new Dimension(300, 300));
+        }
+
+        public void stopCamera() {
+            camera.release();
         }
 
         public void startCamera() {
@@ -122,10 +186,8 @@ public class ScannerQRCODE extends JFrame {
                     if (qrCodeText != null) {
                         System.out.println("QR code content: " + qrCodeText);
                         updateTextFieldsFromJson(qrCodeText);
-                        camera.release(); // Libérer la caméra
-                        panelCamera.removeAll(); // Supprimer le contenu du panneau de la caméra
-                        panelCamera.repaint(); // Redessiner le panneau de la caméra (vide)
-                        btnScanQR.setEnabled(true); // Réactiver le bouton de numérisation QR
+                        btnScanQR.setEnabled(true);
+                        camera.release();
                         break;
                     }
 
@@ -154,9 +216,10 @@ public class ScannerQRCODE extends JFrame {
                 String nom = (String) jsonObject.get("nom");
                 String prenom = (String) jsonObject.get("prenom");
 
-                // Mettre à jour les champs de texte avec les valeurs extraites
                 textNumSerie.setText(numeroLicence);
-                // Mettre les valeurs de nom et prénom dans les autres champs de texte
+                textPrenom.setText(prenom);
+                textNom.setText(nom);
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -178,5 +241,19 @@ public class ScannerQRCODE extends JFrame {
             }
         }
     }
-}
 
+    public void ouvrirLicencie(String numeroLicence) {
+        EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    LicencieDetailsApp frame = new LicencieDetailsApp(numeroLicence); // Passer le numéro de licence
+                    frame.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+
+}
