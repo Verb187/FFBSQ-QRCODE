@@ -26,11 +26,6 @@ public class LicencieModele {
 
             if (resultSet.next()) {
                 // Récupérer les données du résultat de la requête
-                licencie = new Licencie();
-                licencie.setNumeroLicence(resultSet.getString("numlicencie"));
-                licencie.setNom(resultSet.getString("nomlicencie"));
-                licencie.setPrenom(resultSet.getString("prenomlicencie"));
-                licencie.setSexe(resultSet.getString("sexelicencie"));
             }
         } catch (SQLException e) {
             e.printStackTrace();

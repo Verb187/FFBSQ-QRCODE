@@ -108,9 +108,9 @@ public class ScanQRCODEApp extends JFrame {
         JButton btnModify = new JButton("VOIR LE LICENCIE");
         btnModify.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	String numeroLicence = textNumSerie.getText();
-            	ouvrirLicencie(numeroLicence); // 
-            	}
+                String numeroLicence = textNumSerie.getText();
+                ouvrirLicencie(numeroLicence); // 
+            }
         });
         btnModify.setFont(new Font("MS UI Gothic", Font.BOLD, 18));
         btnModify.setBounds(373, 165, 462, 45);
@@ -213,17 +213,36 @@ public class ScanQRCODEApp extends JFrame {
 
                 // Extraire les valeurs du JSON
                 String numeroLicence = (String) jsonObject.get("numero_licence");
-                String nom = (String) jsonObject.get("nom");
-                String prenom = (String) jsonObject.get("prenom");
-
+                String token = (String) jsonObject.get("token");
                 textNumSerie.setText(numeroLicence);
-                textPrenom.setText(prenom);
-                textNom.setText(nom);
+
+                getDetailsByNumeroLicencieAndToken(numeroLicence, token);
+
 
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
+
+        public void getDetailsByNumeroLicencieAndToken(String numeroLicence, String token) {
+            // Faites appel à votre contrôleur pour obtenir les détails du licencié
+            LicencieController controller = new LicencieController();
+            JSONObject details = controller.getDetailsByNumeroLicencieAndToken(numeroLicence, token);
+        
+            if (details != null) {
+                // Extraire les valeurs du JSON
+                String prenom = (String) details.get("prenom");
+                String nom = (String) details.get("nom");
+        
+                // Mettre à jour les champs de texte avec les détails récupérés
+                textPrenom.setText(prenom);
+                textNom.setText(nom);
+            } else {
+                // Gérer le cas où aucun détail n'est trouvé pour ce numéro de licence
+                JOptionPane.showMessageDialog(null, "Aucun détail trouvé pour ce numéro de licence.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
 
         private String readQRCode(BufferedImage image) {
             try {
@@ -254,6 +273,4 @@ public class ScanQRCODEApp extends JFrame {
             }
         });
     }
-
-
 }
