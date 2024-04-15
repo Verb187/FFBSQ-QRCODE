@@ -22,7 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import org.json.simple.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -42,6 +43,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
+import C.LicencieAPIController;
 import C.LicencieController;
 
 public class ScanQRCODEApp extends JFrame {
@@ -207,41 +209,36 @@ public class ScanQRCODEApp extends JFrame {
 
         private void updateTextFieldsFromJson(String jsonString) {
             try {
-                // Parser la chaîne JSON
-                JSONParser parser = new JSONParser();
-                JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
-
-                // Extraire les valeurs du JSON
-                String numeroLicence = (String) jsonObject.get("numero_licence");
-                String token = (String) jsonObject.get("token");
+                JSONObject jsonObject = new JSONObject(jsonString);
+        
+                String numeroLicence = jsonObject.getString("numero_licence");
+                String token = jsonObject.getString("token");
                 textNumSerie.setText(numeroLicence);
-
+        
                 getDetailsByNumeroLicencieAndToken(numeroLicence, token);
-
-
-            } catch (ParseException e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+        
 
-        public void getDetailsByNumeroLicencieAndToken(String numeroLicence, String token) {
-            // Faites appel à votre contrôleur pour obtenir les détails du licencié
-            LicencieController controller = new LicencieController();
-            JSONObject details = controller.getDetailsByNumeroLicencieAndToken(numeroLicence, token);
-        
-            if (details != null) {
-                // Extraire les valeurs du JSON
-                String prenom = (String) details.get("prenom");
-                String nom = (String) details.get("nom");
-        
-                // Mettre à jour les champs de texte avec les détails récupérés
-                textPrenom.setText(prenom);
-                textNom.setText(nom);
-            } else {
-                // Gérer le cas où aucun détail n'est trouvé pour ce numéro de licence
-                JOptionPane.showMessageDialog(null, "Aucun détail trouvé pour ce numéro de licence.", "Erreur", JOptionPane.ERROR_MESSAGE);
+       
+        private void getDetailsByNumeroLicencieAndToken(String numeroLicence, String token) {
+            LicencieAPIController licencieAPIController = new LicencieAPIController();
+            JSONObject licencieDetails = null;
+            try {
+                licencieDetails = licencieAPIController.getDetailsByNumeroLicencieAndToken(numeroLicence, token);
+                if (licencieDetails != null) {
+                    textNom.setText(licencieDetails.getString("nomlicencie"));
+                    textPrenom.setText(licencieDetails.getString("prenomlicencie"));
+                } else {
+                    JOptionPane.showMessageDialog(null, "Licencié introuvable!");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
+        
         
 
         private String readQRCode(BufferedImage image) {

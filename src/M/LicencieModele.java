@@ -25,12 +25,10 @@ public class LicencieModele {
             resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                // Récupérer les données du résultat de la requête
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            // Fermer les ressources
             try {
                 if (resultSet != null) resultSet.close();
                 if (preparedStatement != null) preparedStatement.close();

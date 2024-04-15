@@ -4,14 +4,6 @@ import DAO.DBConnection;
 import M.Licencie;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,7 +48,6 @@ public class LicencieController {
     }
 
     public void updateLicencie(Licencie licencie) {
-
         String query = "UPDATE licencie SET nomlicencie = ?, prenomlicencie = ?, sexelicencie = ?, datedenaissance = ?, photolicencie = ?, categorielicencie = ?, positionlicencie = ?, adr_licencie = ?, adr_ville_licencie = ?, tel_licencie = ?, mail_licencie = ?, nationalite_licencie = ?, classification_licencie = ?, validite_CM = ?, annee_reprise = ?, premiere_licence = ?, numeroaffiliation = ? WHERE numlicencie = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -84,7 +75,7 @@ public class LicencieController {
         }
     }
 
-    public JSONObject getDetailsByNumeroLicencieAndToken(String numeroLicence, String token) {
+    public static JSONObject getDetailsByNumeroLicencieAndToken(String numeroLicence, String token) {
         JSONObject licencieDetails = new JSONObject();
         String query = "SELECT * FROM licencie WHERE numlicencie = ? AND token = ?";
         try (Connection conn = DBConnection.getConnection();

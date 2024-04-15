@@ -291,46 +291,35 @@ public class LicencieDetailsApp extends JFrame {
         return textFieldNumeroLicence.getText();
     }
 
-    private void afficherDetailsLicencie() {
-        if (numeroLicence != null) {
-            Licencie licencie = licencieController.getDetailsByNumeroLicence(numeroLicence);
-            if (licencie != null) {
-                System.out.println("Licencie trouvé: " + licencie.getNom() + " " + licencie.getPrenom() + " " + licencie.getSexe());
-                textFieldNumeroLicence.setText(licencie.getNumeroLicence());
-                textFieldNom.setText(licencie.getNom());
-                textFieldPrenom.setText(licencie.getPrenom());
-                textFieldSexe.setText(licencie.getSexe());
-                textFieldDateNaissance.setText(licencie.getDatedenaissance());
-                textFieldPhotoLicencie.setText(licencie.getPhotolicencie());
-                textFieldCategorieLicencie.setText(licencie.getCategorielicencie());
-                textFieldPositionLicencie.setText(licencie.getPositionlicencie());
-                textFieldAdrLicencie.setText(licencie.getAdr_licencie());
-                textFieldAdrVilleLicencie.setText(licencie.getAdr_ville_licencie());
-                textFieldTelLicencie.setText(licencie.getTel_licencie());
-                textFieldMailLicencie.setText(licencie.getMail_licencie());
-                textFieldNationaliteLicencie.setText(licencie.getNationalite_licencie());
-                textFieldClassificationLicencie.setText(licencie.getClassification_licencie());
-                textFieldValiditeCM.setText(licencie.getValidite_CM());
-                textFieldAnneeReprise.setText(licencie.getAnnee_reprise());
-                textFieldPremiereLicence.setText(licencie.getPremiere_licence());
-                textFieldNumeroAffiliation.setText(licencie.getNumeroaffiliation());
 
-            } else {
-                showErrorMessage("Aucun licencié trouvé pour ce numéro de licence.");
-            }
-        } else {
-            showErrorMessage("Numéro de licence non spécifié.");
-        }
+    private void afficherDetailsLicencie() {
+        Licencie licencie = licencieAPIController.getDetailsByNumeroLicence(numeroLicence);
+        textFieldNumeroLicence.setText(licencie.getNumeroLicence());
+        textFieldNom.setText(licencie.getNom());
+        textFieldPrenom.setText(licencie.getPrenom());
+        textFieldSexe.setText(licencie.getSexe());
+        textFieldDateNaissance.setText(licencie.getDatedenaissance());
+        textFieldPhotoLicencie.setText(licencie.getPhotolicencie());
+        textFieldCategorieLicencie.setText(licencie.getCategorielicencie());
+        textFieldPositionLicencie.setText(licencie.getPositionlicencie());
+        textFieldAdrLicencie.setText(licencie.getAdr_licencie());
+        textFieldAdrVilleLicencie.setText(licencie.getAdr_ville_licencie());
+        textFieldTelLicencie.setText(licencie.getTel_licencie());
+        textFieldMailLicencie.setText(licencie.getMail_licencie());
+        textFieldNationaliteLicencie.setText(licencie.getNationalite_licencie());
+        textFieldClassificationLicencie.setText(licencie.getClassification_licencie());
+        textFieldValiditeCM.setText(licencie.getValidite_CM());
+        textFieldAnneeReprise.setText(licencie.getAnnee_reprise());
+        textFieldPremiereLicence.setText(licencie.getPremiere_licence());
+        textFieldNumeroAffiliation.setText(licencie.getNumeroaffiliation());
     }
 
    private void SauvegarderLicencie() {
-    // Vérification que tous les champs obligatoires sont remplis
     if (textFieldNumeroLicence.getText().isEmpty() || textFieldNom.getText().isEmpty()) {
         showErrorMessage("Les champs obligatoires doivent être remplis.");
         return;
     }
 
-    // Création de l'objet Licencie avec les données du formulaire
     Licencie licencie = new Licencie();
     licencie.setNumeroLicence(textFieldNumeroLicence.getText());
     licencie.setNom(textFieldNom.getText());
@@ -357,8 +346,14 @@ public class LicencieDetailsApp extends JFrame {
 
     public void Retour() {
         this.dispose();
+        refreshScanQRCODEApp();
     }
 
     public void showErrorMessage(String message) {
+    }
+
+    public void refreshScanQRCODEApp() {
+        ScanQRCODEApp scanQRCODEApp = new ScanQRCODEApp();
+    scanQRCODEApp.setVisible(true);
     }
 }
